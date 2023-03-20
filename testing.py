@@ -14,15 +14,12 @@ for cur_key in page_paths:
     if num_iter == 12:
         print("jere")
     new_url = base_url + "/" + page_paths[cur_key]
-    for cur_page in range (1, 9):
-        actual_new_url = new_url + "/" + "p" + str(cur_page)
+    for x in range (1, 9):
+        actual_new_url = new_url + "/" + "p" + str(x)
         cur_page = requests.get(actual_new_url)
         doc = BeautifulSoup(cur_page.text, "html.parser")
         rows = doc.find_all("tr")
         rows = rows[1:len(rows)]
-        if cur_page == 8:
-            print(rows)
-            exit(0)
         for cur_row in rows:
             entries = cur_row.find_all("td")
             if cur_key != 'Fouls/Game' and cur_key != 'OPP RPG':
@@ -37,3 +34,4 @@ for cur_key in page_paths:
     first_run = False
     num_iter += 1
             
+print("done")
