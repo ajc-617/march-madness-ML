@@ -14,6 +14,7 @@ import requests
 import pandas as pd
 import time
 from io import StringIO
+from bs4 import BeautifulSoup
 # ── Optional: suppress SSL warnings if you hit certificate issues ──
 import warnings
 warnings.filterwarnings("ignore")
@@ -103,7 +104,7 @@ def _scrape_barttorvik(year: int) -> pd.DataFrame:
     return df
 
 def _clean_barttorvik_columns(df) -> pd.DataFrame: 
-
+    """drops unknown columns from barttorvik dataset that are also falsy, that being an empty string or 0"""
     #dropping a bunch of unknown columns from the JSON return that have all falsy values
     df = df.drop(["unk_1", "unk_2", "unk_5", "unk_6", "unk_7", "unk_8", "unk_9", "unk_10", "unk_12"], axis=1)
     #dropping duplicate adjusted tempo column as well, and record because we already have games and wins
@@ -131,6 +132,16 @@ def scrape_all_years(start: int = 2010, end: int = 2025):
 # 2. SCRAPE TOURNAMENT RESULTS (Sports Reference)
 # ─────────────────────────────────────────────
 
+def _parse_team(div):
+    """Takes in a div for either the winning team or losing team of the matchup, returns tuple in form of (seed, team name, score of team)"""
+    seed  = div.find("span").get_text(strip=True) if div.find("span") else None
+    links = div.find_all("a")
+    team  = links[0].get_text(strip=True) if links else None
+    score = links[1].get_text(strip=True) if len(links) > 1 else None
+    return (int(seed) if seed and seed.isdigit() else None,
+            team,
+            int(score) if score and score.isdigit() else None)
+
 def scrape_tourney_results(year: int) -> pd.DataFrame:
     """
     Pull NCAA tournament game results from Sports Reference for a given year.
@@ -149,6 +160,7 @@ def scrape_tourney_results(year: int) -> pd.DataFrame:
     brackets_div = soup.find("div", id="brackets")
 
     records = []
+    #national region contains final 4 for that year
     regions = ["east", "midwest", "south", "west", "national"]
 
     for region in regions:
