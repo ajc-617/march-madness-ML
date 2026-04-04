@@ -20,6 +20,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
+##TODO refactor into class
+
 def _fetch_json_with_browser(url: str):
     """
     Fetch a JSON endpoint that sits behind a JS bot-challenge page.
@@ -94,21 +96,20 @@ def _scrape_barttorvik(year: int) -> pd.DataFrame:
         "unk_12" #null
     ]
 
-    #deep to drop record because it's a string also adj_t_2 because it's a duplicate
     rows = [row for row in raw]
     df = pd.DataFrame(rows, columns=new_columns)
     #saving raw dataframe to folder
-    df.to_csv(f"../../data/raw/bartorvik/{year}.csv")
-    # Derived feature: efficiency margin (single best tournament predictor)
-    df["adj_em"] = pd.to_numeric(df["adjoe"], errors="coerce") - pd.to_numeric(df["adjde"], errors="coerce")
+    df.to_csv(f"data/raw/bartorvik/{year}.csv")
     return df
 
 def _clean_barttorvik_columns(df) -> pd.DataFrame: 
-    """drops unknown columns from barttorvik dataset that are also falsy, that being an empty string or 0"""
+    """drops unknown columns from barttorvik dataset that are unkown AND falsy, that being an empty string or 0"""
     #dropping a bunch of unknown columns from the JSON return that have all falsy values
     df = df.drop(["unk_1", "unk_2", "unk_5", "unk_6", "unk_7", "unk_8", "unk_9", "unk_10", "unk_12"], axis=1)
     #dropping duplicate adjusted tempo column as well, and record because we already have games and wins
     df = df.drop(["adj_t_2", "record"], axis=1)
+    # Derived feature: efficiency margin (single best tournament predictor)
+    df["adj_em"] = pd.to_numeric(df["adjoe"], errors="coerce") - pd.to_numeric(df["adjde"], errors="coerce")
     return df
 
 def scrape_all_years(start: int = 2010, end: int = 2025):
@@ -120,13 +121,14 @@ def scrape_all_years(start: int = 2010, end: int = 2025):
             df = _scrape_barttorvik(year)
             frames.append(df)
         except Exception as e:
-            print(f"FAILED WITH EXCEPTION ({e})")
+            print(f"BARTTORVIK FAILED WITH EXCEPTION ({e})")
           # to avoid throttling server too much
         time.sleep(1.5)
     cleaned_df = _clean_barttorvik_columns(pd.concat(frames, ignore_index=True))
-    cleaned_df.to_csv("../../data/processed/team_stats.csv", index=False)
-    return cleaned_df
+    cleaned_df.to_csv("data/processed/barttorvik_team_stats.csv", index=False)
 
+
+##  TODO refactor into Class
 
 # ─────────────────────────────────────────────
 # 2. SCRAPE TOURNAMENT RESULTS (Sports Reference)
@@ -142,7 +144,8 @@ def _parse_team(div):
             team,
             int(score) if score and score.isdigit() else None)
 
-def scrape_tourney_results(year: int) -> pd.DataFrame:
+
+def scrape_tourney_results(start: int = 2010, end: int = 2025):
     """
     Pull NCAA tournament game results from Sports Reference for a given year.
     Returns a DataFrame with columns: year, region, seed_winner, team_winner,
@@ -150,50 +153,56 @@ def scrape_tourney_results(year: int) -> pd.DataFrame:
 
     Note: First Four play-in games are not included — only R64 through Championship.
     """
-    url = f"https://www.sports-reference.com/cbb/postseason/men/{year}-ncaa.html"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-
-    resp = requests.get(url, headers=headers, timeout=15)
-    resp.raise_for_status()
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-    brackets_div = soup.find("div", id="brackets")
-
     records = []
-    #national region contains final 4 for that year
-    regions = ["east", "midwest", "south", "west", "national"]
+    for year in range(start, end + 1):
+        print(f"Fetching {year}...")
 
-    for region in regions:
-        region_div = brackets_div.find("div", id=region)
-        if not region_div:
-            continue
+        url = f"https://www.sports-reference.com/cbb/postseason/men/{year}-ncaa.html"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
-        bracket = region_div.find("div", id="bracket")
-        if not bracket:
-            continue
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
 
-        for round_div in bracket.find_all("div", class_="round"):
-            for game_div in round_div.find_all("div", recursive=False):
-                team_divs = game_div.find_all("div", recursive=False)
-                if len(team_divs) < 2:
-                    continue
+        soup = BeautifulSoup(resp.text, "html.parser")
+        brackets_div = soup.find("div", id="brackets")
 
-                team_a, team_b = team_divs[0], team_divs[1]
-                winner_div, loser_div = (team_a, team_b) if "winner" in team_a.get("class", []) else (team_b, team_a)
+        #national region contains final 4 for that year
+        regions = ["east", "midwest", "south", "west", "national"]
+
+        for region in regions:
+            region_div = brackets_div.find("div", id=region)
+            if not region_div:
+                continue
+
+            bracket = region_div.find("div", id="bracket")
+            if not bracket:
+                continue
+            
+            #Each round has its own div so loop over each round
+            for round_div in bracket.find_all("div", class_="round"):
+                #For the round div, find each immediate child div, where each of these child divs will be one game
+                for game_div in round_div.find_all("div", recursive=False):
+                    team_divs = game_div.find_all("div", recursive=False)
+                    if len(team_divs) < 2:
+                        continue
+
+                    team_a, team_b = team_divs[0], team_divs[1]
+                    #to establish if team_a or team_b is the winner of the game
+                    winner_div, loser_div = (team_a, team_b) if "winner" in team_a.get("class", []) else (team_b, team_a)
 
 
-                seed_w, team_w, score_w = _parse_team(winner_div)
-                seed_l, team_l, score_l = _parse_team(loser_div)
+                    seed_w, team_w, score_w = _parse_team(winner_div)
+                    seed_l, team_l, score_l = _parse_team(loser_div)
 
-                records.append({
-                    "year":         year,
-                    "region":       region,
-                    "seed_winner":  seed_w,
-                    "team_winner":  team_w,
-                    "score_winner": score_w,
-                    "score_loser":  score_l,
-                    "seed_loser":   seed_l,
-                    "team_loser":   team_l,
-                })
+                    records.append({
+                        "year":         year,
+                        "region":       region,
+                        "seed_winner":  seed_w,
+                        "team_winner":  team_w,
+                        "score_winner": score_w,
+                        "score_loser":  score_l,
+                        "seed_loser":   seed_l,
+                        "team_loser":   team_l,
+                    })
 
-    return pd.DataFrame(records)
+    pd.DataFrame(records).to_csv("data/processed/sports_ref_team_results.csv")
