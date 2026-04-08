@@ -56,6 +56,7 @@ arkansas-little rock,1114
 arkansas-little-rock,1114
 arkansas-pine bluff,1115
 arkansas-pine-bluff,1115
+arkansas pine bluff,1115
 arkansas-st,1117
 arkansas-state,1117
 armstrong,1118
@@ -78,6 +79,7 @@ baylor,1124
 bellarmine,1468
 belmont,1125
 bethune-cookman,1126
+bethune cookman,1126
 binghamton,1127
 birmingham so,1128
 birmingham southern,1128
@@ -125,6 +127,7 @@ cal state-fullerton,1168
 cal-poly,1142
 cal-st-fullerton,1168
 cal-state-bakersfield,1167
+cal st. bakersfield,1167
 cal-state-fullerton,1168
 cal-state-northridge,1169
 cal. state - bakersfield,1167
@@ -361,6 +364,7 @@ idaho-state,1226
 il chicago,1227
 ill-chicago,1227
 ill.-chicago,1227
+illinois chicago,1227
 illinois,1228
 illinois st,1229
 illinois st.,1229
@@ -424,6 +428,7 @@ kent-state,1245
 kentucky,1246
 la salle,1247
 la-monroe,1419
+louisiana monroe,1419
 la-salle,1247
 la.-lafayette,1418
 la.-monroe,1419
@@ -532,6 +537,7 @@ middle-tennessee-state,1292
 milwaukee,1454
 minnesota,1278
 miss valley st.,1290
+mississippi valley st.,1290
 mississippi,1279
 mississippi st,1280
 mississippi st.,1280
@@ -765,6 +771,7 @@ purdue,1345
 purdue fort wayne,1236
 queens (nc),1474
 queens nc,1474
+queens,1474
 quinnipiac,1346
 radford,1347
 rhode island,1348
@@ -787,7 +794,9 @@ sacred heart,1357
 sacred-heart,1357
 saint bonaventure,1382
 saint francis (ny),1383
+st. francis ny,1383
 saint francis (pa),1384
+saint francis,1384
 saint john`s,1385
 saint joseph's,1386
 saint joseph`s,1386
@@ -880,6 +889,7 @@ south-dakota-state,1355
 south-fla,1378
 south-florida,1378
 southeast missouri state,1369
+southeast missouri st.,1369
 southeast mo. st.,1369
 southeast-missouri-state,1369
 southeast-mo-st,1369
@@ -966,9 +976,11 @@ tam c,1394
 tam c. christi,1394
 tarleton st,1470
 tarleton state,1470
+tarleton st.,1470
 tcu,1395
 temple,1396
 tenn-martin,1404
+tennessee martin,1404
 tennessee,1397
 tennessee st,1398
 tennessee st.,1398
@@ -987,6 +999,7 @@ texas a&m corpus,1394
 texas a&m-cc,1394
 texas a&m-commerce,1477
 texas a&m-corpus christi,1394
+texas a&m corpus chris,1394
 texas arlington,1426
 texas christian,1395
 texas rio grande valley,1410
@@ -1005,6 +1018,7 @@ texas-el-paso,1431
 texas-pan american,1410
 texas-pan-american,1410
 texas-rio grande valley,1410
+ut rio grande valley,1410
 texas-san antonio,1427
 texas-san antonio(ut,1427
 texas-san-antonio,1427
@@ -1155,6 +1169,7 @@ william-mary,1456
 winston salem,1445
 winston-salem,1445
 winston-salem-state,1445
+winston salem st.,1445
 winthrop,1457
 wis.-green bay,1453
 wis.-milwaukee,1454
