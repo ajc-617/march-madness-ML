@@ -4,3 +4,4 @@
 testing.ipynb
 .vscode
 .claude
+*.pyc
