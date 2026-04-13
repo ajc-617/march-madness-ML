@@ -1,5 +1,6 @@
 /src/data/*.json
 /src/data/junk.py
 /data
-/notebooks
+testing.ipynb
+.vscode
 .claude
