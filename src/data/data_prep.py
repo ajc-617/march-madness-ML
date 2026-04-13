@@ -154,10 +154,10 @@ def scrape_tourney_results(start: int = 2010, end: int = 2025):
     Note: First Four play-in games are not included — only R64 through Championship.
     """
     records = []
-    for year in range(start, end + 1):
-        print(f"Fetching {year}...")
+    for season in range(start, end + 1):
+        print(f"Fetching {season}...")
 
-        url = f"https://www.sports-reference.com/cbb/postseason/men/{year}-ncaa.html"
+        url = f"https://www.sports-reference.com/cbb/postseason/men/{season}-ncaa.html"
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
         resp = requests.get(url, headers=headers, timeout=15)
@@ -195,14 +195,14 @@ def scrape_tourney_results(start: int = 2010, end: int = 2025):
                     seed_l, team_l, score_l = _parse_team(loser_div)
 
                     records.append({
-                        "year":         year,
-                        "region":       region,
-                        "seed_winner":  seed_w,
-                        "team_winner":  team_w,
+                        "season": season,
+                        "region": region,
+                        "seed_winner": seed_w,
+                        "team_winner": team_w,
                         "score_winner": score_w,
-                        "score_loser":  score_l,
-                        "seed_loser":   seed_l,
-                        "team_loser":   team_l,
+                        "score_loser": score_l,
+                        "seed_loser": seed_l,
+                        "team_loser": team_l,
                     })
 
-    pd.DataFrame(records).to_csv("data/processed/sports_ref_team_results.csv")
+    pd.DataFrame(records).to_csv("data/processed/sports_ref_team_results.csv", index=False)
