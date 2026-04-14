@@ -17,4 +17,4 @@ if __name__ == "__main__":
     #assert that results file exists
     assert os.path.isfile("data/processed/sports_ref_team_results.csv"), "File data/processed/sports_ref_team_results.csv not found"
 
-    splits = feature_engineering()
+    #splits = feature_engineering()
