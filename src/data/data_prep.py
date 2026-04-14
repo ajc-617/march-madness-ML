@@ -194,6 +194,10 @@ def scrape_tourney_results(start: int = 2010, end: int = 2025):
                     seed_w, team_w, score_w = _parse_team(winner_div)
                     seed_l, team_l, score_l = _parse_team(loser_div)
 
+                    #This is to handle forfeit games such as VCU vs Oregon in 2021 due to COVID
+                    if not score_w or not score_l:
+                        print(f"No score for {team_w} or {team_l} in {season}")
+                        continue
                     records.append({
                         "season": season,
                         "region": region,
